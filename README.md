@@ -66,7 +66,8 @@ reviewer-guard --context context.json
 ```
 
 `--context -` reads standard input. The CLI accepts at most 65536 UTF-8 bytes,
-rejects unknown keys, and converts JSON history arrays to tuples. It outputs only
+rejects unknown and duplicate keys (including equivalent JSON-escaped keys),
+and converts JSON history arrays to tuples. It outputs only
 the decision and fixed reason codes, not the supplied identities or raw input.
 
 | Outcome | CLI exit | Meaning |
@@ -145,6 +146,13 @@ Content hashes verify bytes, not truth of authorship or review declarations.
 Source builds, virtual environments and caches add files: verify a fresh payload.
 
 ## Version and feedback
+
+v0.1.1 candidate: the CLI rejects duplicate JSON object keys with UNKNOWN,
+INVALID_CLI_INPUT and exit 2 instead of silently accepting the last value.
+The provenance verifier explicitly reads UTF-8. Identity comparisons, the
+16-case demo and the strict eight-file payload check remain unchanged.
+The provenance record is a preparation snapshot, not release authorization;
+independent review and publication decisions must bind this new candidate.
 
 v0.1.0 provides the bounded library, JSON CLI, synthetic demo/benchmark and content
 verification. Dynamic Python subclasses fail closed. This initial source release

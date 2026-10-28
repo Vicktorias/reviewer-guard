@@ -91,7 +91,7 @@ def evaluate_reviewer(context: ReviewContext) -> EligibilityResult:
     return EligibilityResult(Eligibility.ELIGIBLE, ("INDEPENDENCE_CONFIRMED",))
 
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 
 def _synthetic_cases():
@@ -151,7 +151,14 @@ def main(argv=None) -> int:
                     data = source.read(65537)
             if len(data) > 65536:
                 raise ValueError("size")
-            payload = json.loads(data.decode("utf-8"))
+            def reject_duplicate_keys(pairs):
+                payload = {}
+                for key, value in pairs:
+                    if key in payload:
+                        raise ValueError("duplicate JSON key")
+                    payload[key] = value
+                return payload
+            payload = json.loads(data.decode("utf-8"), object_pairs_hook=reject_duplicate_keys)
             required = {"reviewer_id", "project_id", "target_digest", "scope_id"}
             histories = {"author_ids", "material_contributor_ids", "delegated_from_ids",
                          "active_write_owner_ids"}

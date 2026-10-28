@@ -193,9 +193,75 @@ class CliTests(unittest.TestCase):
             self.assertTrue(report["synthetic_only"])
             self.assertEqual(report["mismatched_observations"], 0)
             self.assertEqual(report["observation_count"], observations)
-        self.assertEqual(self.run_cli("--version").stdout.strip(), "0.1.0")
+        self.assertEqual(self.run_cli("--version").stdout.strip(), "0.1.1")
         for args in (("--benchmark", "--iterations", "0"), ("--benchmark", "--iterations", "10001"), ()):
             self.assertEqual(self.run_cli(*args).returncode, 2)
+
+
+    def test_duplicate_keys_fail_closed_in_both_orders_and_input_routes(self):
+        import json
+        import tempfile
+        from pathlib import Path
+        for first, second in (("author-a", "reviewer-b"), ("reviewer-b", "author-a"),
+                              ("reviewer-b", "reviewer-b")):
+            for key in ('"reviewer_id"', '"reviewer\\u005fid"'):
+                data = json.dumps(self.payload(reviewer_id=first))[:-1] + f', {key}: "{second}"}}'
+                with self.subTest(first=first, second=second, key=key):
+                    with tempfile.TemporaryDirectory() as directory:
+                        path = Path(directory) / "context.json"
+                        path.write_text(data, encoding="utf-8")
+                        results = (self.run_cli("--context", "-", data=data),
+                                   self.run_cli("--context", str(path)))
+                    for result in results:
+                        self.assertEqual(result.returncode, 2, result.stderr)
+                        self.assertEqual(json.loads(result.stdout), {
+                            "outcome": "UNKNOWN", "reason_codes": ["INVALID_CLI_INPUT"]})
+                        self.assertEqual(result.stderr, "")
+
+
+class VerifierTests(unittest.TestCase):
+    def copy_payload(self, directory):
+        import shutil
+        from pathlib import Path
+        from verify_provenance import PAYLOAD_FILES
+        root = Path(directory)
+        for name in PAYLOAD_FILES:
+            shutil.copyfile(Path(__file__).resolve().parent / name, root / name)
+        return root
+
+    def test_non_ascii_provenance_uses_explicit_utf8(self):
+        import json
+        import tempfile
+        from pathlib import Path
+        from unittest.mock import patch
+        from verify_provenance import verify_payload
+        original = Path.read_text
+        def require_encoding(path, *args, **kwargs):
+            self.assertEqual(kwargs.get("encoding"), "utf-8")
+            return original(path, *args, **kwargs)
+        with tempfile.TemporaryDirectory() as directory:
+            root = self.copy_payload(directory)
+            record_path = root / "provenance.json"
+            record = json.loads(record_path.read_bytes())
+            record["attestation"]["notes"] += " Syntetisk kommentar: åäö."
+            record_path.write_text(json.dumps(record, ensure_ascii=False), encoding="utf-8")
+            with patch.object(Path, "read_text", require_encoding):
+                self.assertTrue(verify_payload(root).startswith("sha256:"))
+
+    def test_extra_cache_and_edited_payload_still_fail(self):
+        import tempfile
+        from verify_provenance import verify_payload
+        with tempfile.TemporaryDirectory() as directory:
+            root = self.copy_payload(directory)
+            verify_payload(root)
+            cache = root / "__pycache__"
+            cache.mkdir()
+            with self.assertRaises(ValueError):
+                verify_payload(root)
+            cache.rmdir()
+            (root / "demo.py").write_text("# altered\n", encoding="utf-8")
+            with self.assertRaises(ValueError):
+                verify_payload(root)
 
 
 if __name__ == "__main__":

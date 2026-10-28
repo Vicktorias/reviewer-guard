@@ -14,14 +14,14 @@
       "verify_provenance.py",
       "LICENSE"
     ],
-    "target_ref": "sha256:458c61d1af4fb8c2b6d8108e2965b31b7e0792e60b594edeeba5c66482f9f2f6",
+    "target_ref": "sha256:704b5139a3d5da4c9d2d01a84e80ec864fe79960416432b40d88fb7bec3fa2d6",
     "content_digests": {
-      "reviewer_guard.py": "sha256:bb65a95d03c663048abd31206f35d3774e81b48d60f0d77085b33088030bd884",
-      "test_reviewer_guard.py": "sha256:bfffb5244415d9a35880ea8a7561afb894b11a665263aef5fca5f8fdd1d0af1f",
+      "reviewer_guard.py": "sha256:f32d1c1c3164a34c1c6238b3e6753265119f73f3832b3d0c783ef0f7284cd054",
+      "test_reviewer_guard.py": "sha256:674369038e740037d95d65c1586baa67af7363505fda709cda556bbd2ea44458",
       "demo.py": "sha256:60611b771188d21a9abaf0ecf0d781ee4c6272789412725359762101b5790606",
-      "README.md": "sha256:e8621730cc3d410978cc2d415b7bacaa7204548d53ed1c4e3028daaf57587a32",
-      "pyproject.toml": "sha256:62732d24a53b4d62367da186f5f7f824cfadcdd72d4864f25ee7cfa87850a1f9",
-      "verify_provenance.py": "sha256:67b1ba341d0783b862f4db796e8c1fc6fbbfb60c433c1a228cdfdd24ceedc4ad",
+      "README.md": "sha256:8d1eef633f4a78d0e20d35581ee7f21ad88b311c677d3d0f47e8fbe888ccd144",
+      "pyproject.toml": "sha256:fcf13846e632b8e6b05dc0e193d35113c5cf21d61e4b0ee317bcbfece5075913",
+      "verify_provenance.py": "sha256:56ee9d81f328c64404b6ef766644214ad1c388cad5bb6249deaf83aacd571915",
       "LICENSE": "sha256:074e6e32c86a4c0ef8b3ed25b721ca23aca83df277cd88106ef7177c354615ff"
     }
   },
@@ -76,7 +76,7 @@
   },
   "attestation": {
     "prepared_by": "release-integration-author",
-    "prepared_at": "2026-10-27T11:49:27.880975+00:00",
-    "notes": "Author-side content record for the eight-file v0.1.0 source candidate with strict builtin data boundary, bounded JSON CLI and synthetic demo/benchmark. Author declarations do not certify ultimate IP ownership. Independent source/security/IP/secret verdict and publication decisions are recorded externally against the full payload digest including this record; pending fields describe preparation time, not a current authorization service."
+    "prepared_at": "2026-10-28T11:26:49.145511+00:00",
+    "notes": "Author-side preparation snapshot for v0.1.1 candidate: reject duplicate JSON keys and explicitly read UTF-8 provenance. Based on public v0.1.0; identity semantics and strict eight-file layout unchanged. This record does not carry forward prior independent review or authorize publication. Pending fields apply to this new candidate; decisions must bind its full payload including this record."
   }
 }
