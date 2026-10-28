@@ -20,7 +20,7 @@ def verify_payload(root: Path) -> str:
     actual = {p.name for p in root.iterdir() if p.name != ".git"}
     if actual != PAYLOAD_FILES or any((root / name).is_symlink() or not (root / name).is_file() for name in actual):
         raise ValueError("payload must contain exactly the declared regular files")
-    record = json.loads((root / "provenance.json").read_text())
+    record = json.loads((root / "provenance.json").read_text(encoding="utf-8"))
     artifact = record["artifact"]
     digests = artifact["content_digests"]
     expected = PAYLOAD_FILES - {"provenance.json"}
